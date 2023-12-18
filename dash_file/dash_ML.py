@@ -9,7 +9,7 @@ dash_ML = Dash(
     requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 dash_ML.title = "信用卡消費樣態"
-dataset = pd.read_csv("../processed_dataset.csv")
+dataset = pd.read_csv("dataset.csv")
 df = pd.DataFrame(dataset)
 
 dash_ML.layout = html.Div(
