@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 dash_ML = Dash(
-    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
+    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.SANDSTONE]
 )
 dash_ML.title = "信用卡消費樣態"
 dataset = pd.read_csv("dataset.csv")
@@ -19,7 +19,7 @@ dash_ML.layout = html.Div(
                 html.Div(
                     [html.Div([html.H1("信用卡消費樣態")], className="col text-center")],
                     className="row",
-                    style={"paddingTop": "3rem"},
+                    style={"paddingTop": "2rem"},
                 ),
                  html.Div(
                     [
@@ -90,8 +90,10 @@ dash_ML.layout = html.Div(
                     style={"paddingTop": "2rem"},
                 ),
                 html.Div([
-                    dcc.Graph(id="graph_line", style={'flex': '3'}),
-                    dcc.Graph(id="graph_age", style={'flex': '3'}),
+                    html.Div([
+                        dcc.Graph(id="graph_line", style={'flex': '5'}),
+                        dcc.Graph(id="graph_age", style={'flex': '5'}),
+                    ],style={'display': 'flex', 'flexWrap': 'wrap'}),
                     dcc.Graph(id="graph_ar", style={'flex': '3'}),
                     dcc.Graph(id="graph_line_age", style={'flex': '3'}),
                 ],style={'display': 'flex', 'flexWrap': 'wrap'}),
@@ -131,7 +133,6 @@ def line_chart(selected_ind):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
-        # Handle the case when a specific industry is selected
         df['平均交易金額'] = df['信用卡交易金額[新台幣]'] / df['信用卡交易筆數']
         agg_df = df.groupby('產業別').agg({
             '信用卡交易金額[新台幣]': 'sum',
@@ -139,7 +140,6 @@ def line_chart(selected_ind):
             '平均交易金額': 'mean'
         }).reset_index()
 
-        # Set color to blue for the selected industry
         highlighted_ind = selected_ind
         print(highlighted_ind)
 
