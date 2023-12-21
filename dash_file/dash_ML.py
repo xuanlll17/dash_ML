@@ -11,7 +11,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 dash_ML = Dash(
-    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
+    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.SANDSTONE]
 )
 dash_ML.title = "2014-2023信用卡消費樣態"
 dataset = pd.read_csv("processed_dataset.csv")
