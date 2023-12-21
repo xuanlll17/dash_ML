@@ -1,15 +1,20 @@
 from dash import Dash, html, dash_table, callback, Input, Output, dcc
 import dash_bootstrap_components as dbc
 import pandas as pd
+import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler
+from sklearn.metrics import r2_score, mean_squared_error
+
 
 dash_ML = Dash(
     requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 dash_ML.title = "2014-2023信用卡消費樣態"
-dataset = pd.read_csv("dataset.csv")
+dataset = pd.read_csv("processed_dataset.csv")
 df = pd.DataFrame(dataset)
 
 dash_ML.layout = html.Div(
@@ -97,6 +102,7 @@ dash_ML.layout = html.Div(
                     dcc.Graph(id="graph_heatmap_age", style={'width': '50%'}),
                     dcc.Graph(id="graph_heatmap_ind", style={'width': '50%'}),
                     dcc.Graph(id="graph_heatmap_ar", style={'width': '50%'}),
+                    dcc.Graph(id="graph_LinearRegression", style={'width': '50%'})
                 ],style={'display': 'flex', 'flexWrap': 'wrap', 'justify-content': 'center'}
                 ),
             ],
@@ -444,4 +450,93 @@ def line_chart(graph_id):
         text_auto=True
     )
     fig.update_layout(title="地區 / 年齡層信用卡交易金額[新台幣](百萬)熱力圖")
+    return fig
+
+@dash_ML.callback(
+    Output("graph_LinearRegression", "figure"),
+    Input("graph_LinearRegression", "id")
+)
+def line_chart(graph_id):
+    global df
+    df["年月"] = pd.to_datetime(df["年"].astype(str) + df["月"].astype(str), format="%Y%m")
+    df["年月"] = df["年月"].dt.strftime("%Y%m")
+
+    # 按照年月分组，計算每年各個月份的信用卡消費金額
+    monthly_total_expenses = df.groupby(["年月"])["信用卡交易金額[新台幣]"].sum().reset_index()
+
+    # 移除第一個月
+    monthly_total_expenses = monthly_total_expenses.iloc[1:]
+
+    # 將 '年月' 轉 datetime 取出年份和月份
+    monthly_total_expenses["年份"] = pd.to_datetime(
+        monthly_total_expenses["年月"], format="%Y%m"
+    ).dt.year
+    monthly_total_expenses["月份"] = pd.to_datetime(
+        monthly_total_expenses["年月"], format="%Y%m"
+    ).dt.month
+
+    X = monthly_total_expenses[["年份", "月份"]].astype(float)
+    y = monthly_total_expenses["信用卡交易金額[新台幣]"]
+
+    # 多項式特徵轉換
+    degree = 2
+    poly = PolynomialFeatures(degree=degree)
+    X_poly = poly.fit_transform(X)
+
+    model = LinearRegression()
+    model.fit(X_poly, y)
+
+    # 預測2023年10月、11月和12月的信用卡消費金額
+    next_months = pd.DataFrame({"年份": [2023] * 3, "月份": [10, 11, 12]})
+    next_months_poly = poly.transform(next_months)
+
+    # 將預測的信用卡金額合併至DataFrame
+    next_months["預測信用卡金額"] = model.predict(next_months_poly)
+
+    # 特徵縮放(MinMaxScaler)
+    scaler_X = MinMaxScaler()
+    scaler_y = MinMaxScaler()
+
+    X_scaled = scaler_X.fit_transform(X_poly)
+    y_scaled = scaler_y.fit_transform(y.values.reshape(-1, 1)).flatten()
+
+    # 建立多項式迴歸模型
+    model_scaled = LinearRegression()
+    model_scaled.fit(X_scaled, y_scaled)
+
+    # 預測2023年10月、11月和12月的信用卡消費金額
+    next_months_scaled = scaler_X.transform(next_months_poly)
+    next_months["預測信用卡金額_scaled"] = scaler_y.inverse_transform(
+        model_scaled.predict(next_months_scaled).reshape(-1, 1)
+    ).flatten()
+
+    r_squared_scaled = r2_score(y_scaled, model_scaled.predict(X_scaled))
+    print(f"R-squared value (scaled): {r_squared_scaled}")
+    mse_scaled = mean_squared_error(y_scaled, model_scaled.predict(X_scaled))
+    print(f"均方差 (scaled): {mse_scaled}")
+
+    # Plotly visualization
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額")
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=next_months["年份"].astype(str) + next_months["月份"].astype(str).str.zfill(2),
+            y=next_months["預測信用卡金額"],
+            mode="markers+lines",
+            name="預測信用卡金額",
+            line=dict(dash="dash", color="red"),
+        )
+    )
+
+    fig.update_layout(
+        title="每月信用卡金額及預測",
+        xaxis_title="年月",
+        yaxis_title="信用卡交易金額",
+        xaxis=dict(tickmode="linear", tick0=0, dtick=8),
+        showlegend=True,
+    )
+
     return fig
