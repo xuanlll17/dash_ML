@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 dash_ML = Dash(
     requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
-dash_ML.title = "信用卡消費樣態"
+dash_ML.title = "2014-2023信用卡消費樣態"
 dataset = pd.read_csv("dataset.csv")
 df = pd.DataFrame(dataset)
 
