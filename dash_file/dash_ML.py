@@ -6,10 +6,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 dash_ML = Dash(
-    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.SANDSTONE]
+    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 dash_ML.title = "信用卡消費樣態"
-dataset = pd.read_csv("dataset.csv")
+dataset = pd.read_csv("processed_dataset.csv")
 df = pd.DataFrame(dataset)
 
 dash_ML.layout = html.Div(
@@ -19,7 +19,7 @@ dash_ML.layout = html.Div(
                 html.Div(
                     [html.Div([html.H1("信用卡消費樣態")], className="col text-center")],
                     className="row",
-                    style={"paddingTop": "2rem"},
+                    style={"paddingTop": "1rem"},
                 ),
                  html.Div(
                     [
@@ -87,16 +87,18 @@ dash_ML.layout = html.Div(
                         )
                     ],
                     className="d-flex justify-content-center",
-                    style={"paddingTop": "2rem"},
+                    style={"paddingTop": "1rem"},
                 ),
                 html.Div([
-                    html.Div([
-                        dcc.Graph(id="graph_line", style={'flex': '5'}),
-                        dcc.Graph(id="graph_age", style={'flex': '5'}),
-                    ],style={'display': 'flex', 'flexWrap': 'wrap'}),
-                    dcc.Graph(id="graph_ar", style={'flex': '3'}),
-                    dcc.Graph(id="graph_line_age", style={'flex': '3'}),
-                ],style={'display': 'flex', 'flexWrap': 'wrap'}),
+                    dcc.Graph(id="graph_line", style={'width': '50%'}),
+                    dcc.Graph(id="graph_ar", style={'width': '50%'}),
+                    dcc.Graph(id="graph_age", style={'width': '50%'}),
+                    dcc.Graph(id="graph_line_age", style={'width': '50%'}),
+                    dcc.Graph(id="graph_heatmap_age", style={'width': '50%'}),
+                    dcc.Graph(id="graph_heatmap_ind", style={'width': '50%'}),
+                    dcc.Graph(id="graph_heatmap_ar", style={'width': '50%'}),
+                ],style={'display': 'flex', 'flexWrap': 'wrap', 'justify-content': 'center'}
+                ),
             ],
             style={"maxWidth":"100%","height":"auto"}
         )
@@ -133,6 +135,7 @@ def line_chart(selected_ind):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
+        # Handle the case when a specific industry is selected
         df['平均交易金額'] = df['信用卡交易金額[新台幣]'] / df['信用卡交易筆數']
         agg_df = df.groupby('產業別').agg({
             '信用卡交易金額[新台幣]': 'sum',
@@ -140,6 +143,7 @@ def line_chart(selected_ind):
             '平均交易金額': 'mean'
         }).reset_index()
 
+        # Set color to blue for the selected industry
         highlighted_ind = selected_ind
         print(highlighted_ind)
 
@@ -309,4 +313,135 @@ def line_chart(selected_ar):
         year_total = df.groupby(['年', '年齡層'])['信用卡交易金額[新台幣]'].sum().reset_index()
         filtered_df = year_total[year_total['年齡層'] == f'{selected_ar}']
         fig = px.line(filtered_df, x="年", y="信用卡交易金額[新台幣]", color="年齡層", title=f'{selected_ar}每年信用卡交易金額趨勢', markers=True)
+    return fig
+
+@dash_ML.callback(
+    Output("graph_heatmap_age", "figure"),
+    Input("graph_heatmap_age", "id")
+)
+def line_chart(graph_id):
+    global df
+    # Convert columns to millions
+    df["信用卡交易金額[新台幣]"] = df["信用卡交易金額[新台幣]"] / 1000000
+    df["信用卡交易筆數"] = df["信用卡交易筆數"] / 1000000
+
+    # Group by year and age group, and aggregate the data
+    grouped_data = (
+        df.groupby(["年", "年齡層"])
+        .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
+        .reset_index()
+    )
+
+    # Calculate '平均交易金額'
+    grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
+
+    print(grouped_data)
+
+    # Pivot the data
+    pivot_table_year = grouped_data.pivot_table(
+        index="年", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+    )
+
+    # Reset the index
+    pivot_table_year.reset_index(inplace=True)
+
+    # Display the result
+    print(pivot_table_year)
+
+    # Plot the heatmap using Plotly
+    fig = px.imshow(
+        pivot_table_year.set_index("年"),
+        labels=dict(x="年齡層", y="年", color="平均交易金額"),
+        color_continuous_scale="viridis",
+        text_auto=True,
+    )
+    fig.update_layout(title="年 / 年齡層 信用卡交易金額[新台幣](百萬)熱力圖")
+    return fig
+
+###有問題
+@dash_ML.callback(
+    Output("graph_heatmap_ind", "figure"),
+    Input("graph_heatmap_ind", "id")
+)
+def line_chart(graph_id):
+    global df
+    # Convert columns to millions
+    df["信用卡交易金額[新台幣]"] = df["信用卡交易金額[新台幣]"] / 10000000
+    df["信用卡交易筆數"] = df["信用卡交易筆數"] / 10000000
+
+    # Group by year and age group, and aggregate the data
+    grouped_data = (
+        df.groupby(["產業別", "年齡層"])
+        .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
+        .reset_index()
+    )
+
+    # Calculate '平均交易金額'
+    grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
+
+    print(grouped_data)
+
+    # Pivot the data
+    pivot_table_year = grouped_data.pivot_table(
+        index="產業別", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+    )
+
+    # Reset the index
+    pivot_table_year.reset_index(inplace=True)
+
+    # Display the result
+    print(pivot_table_year)
+
+    # Plot the heatmap using Plotly
+    fig = px.imshow(
+        pivot_table_year.set_index("產業別"),
+        labels=dict(x="產業別", y="年齡層", color="平均交易金額"),
+        color_continuous_scale="viridis",
+        text_auto=True
+    )
+    fig.update_layout(title="產業別 / 年齡層 信用卡交易金額[新台幣]熱力圖")
+    return fig
+
+###有問題
+@dash_ML.callback(
+    Output("graph_heatmap_ar", "figure"),
+    Input("graph_heatmap_ar", "id")
+)
+def line_chart(graph_id):
+    global df
+    # Convert columns to millions
+    df["信用卡交易金額[新台幣]"] = df["信用卡交易金額[新台幣]"] / 1000000
+    df["信用卡交易筆數"] = df["信用卡交易筆數"] / 1000000
+
+    # Group by year and age group, and aggregate the data
+    grouped_data = (
+        df.groupby(["地區", "年齡層"])
+        .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
+        .reset_index()
+    )
+
+    # Calculate '平均交易金額'
+    grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
+
+    print(grouped_data)
+
+    # Pivot the data
+    pivot_table_year = grouped_data.pivot_table(
+        index="地區", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+    )
+
+    # Reset the index
+    pivot_table_year.reset_index(inplace=True)
+
+    # Display the result
+    print(pivot_table_year)
+
+    # Plot the heatmap using Plotly
+    fig = px.imshow(
+        pivot_table_year.set_index("地區"),
+        labels=dict(x="年齡層", y="地區", color="平均交易金額"),
+        color_continuous_scale="viridis",
+        text_auto=True
+    )
+    fig.update_layout(title="地區 / 年齡層信用卡交易金額[新台幣](百萬)熱力圖")
     return fig
