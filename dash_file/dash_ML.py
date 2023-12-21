@@ -358,7 +358,7 @@ def line_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="年 / 年齡層 信用卡交易金額[新台幣]熱力圖")
+    fig.update_layout(title="年 / 年齡層 信用卡交易金額熱力圖")
     return fig
 
 ###有問題
