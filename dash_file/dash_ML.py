@@ -11,7 +11,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 dash_ML = Dash(
-    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.BOOTSTRAP]
+    requests_pathname_prefix="/dash/ML/", external_stylesheets=[dbc.themes.SANDSTONE]
 )
 dash_ML.title = "2014-2023信用卡消費樣態"
 dataset = pd.read_csv("processed_dataset.csv")
@@ -422,7 +422,7 @@ def line_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="年 / 年齡層 信用卡交易金額[新台幣]熱力圖")
+    fig.update_layout(title="年 / 年齡層 信用卡交易金額熱力圖")
     return fig
 
 
