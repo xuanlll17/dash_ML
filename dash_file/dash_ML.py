@@ -516,9 +516,6 @@ def line_chart(graph_id):
     # 按照年月分组，計算每年各個月份的信用卡消費金額
     monthly_total_expenses = df.groupby(["年月"])["信用卡交易金額[新台幣]"].sum().reset_index()
 
-    # 移除第一個月
-    monthly_total_expenses = monthly_total_expenses.iloc[1:]
-
     # 將 '年月' 轉 datetime 取出年份和月份
     monthly_total_expenses["年份"] = pd.to_datetime(
         monthly_total_expenses["年月"], format="%Y%m"
