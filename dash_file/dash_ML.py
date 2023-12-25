@@ -414,10 +414,9 @@ def heatmapAge_chart(graph_id):
 
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
-    print(grouped_data)
 
     pivot_table_year = grouped_data.pivot_table(
-        index="年", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+        index="年", columns="年齡層", values="平均交易金額", aggfunc="mean"
     )
 
     pivot_table_year.reset_index(inplace=True)
@@ -430,7 +429,7 @@ def heatmapAge_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="年 / 年齡層 信用卡交易金額熱力圖")
+    fig.update_layout(title="年 / 年齡層 平均交易金額[億]熱力圖")
     return fig
 
 
@@ -448,8 +447,9 @@ def heatmapInd_chart(graph_id):
 
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
+
     pivot_table_year = grouped_data.pivot_table(
-        index="產業別", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+        index="產業別", columns="年齡層", values="平均交易金額", aggfunc="mean"
     )
 
     pivot_table_year.reset_index(inplace=True)
@@ -460,7 +460,7 @@ def heatmapInd_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="產業別 / 年齡層 信用卡交易金額熱力圖")
+    fig.update_layout(title="產業別 / 年齡層 平均交易金額熱力圖")
     return fig
 
 
@@ -477,7 +477,7 @@ def heatmapAr_chart(graph_id):
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
     pivot_table_year = grouped_data.pivot_table(
-        index="地區", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
+        index="地區", columns="年齡層", values="平均交易金額", aggfunc="mean"
     )
 
     pivot_table_year.reset_index(inplace=True)
@@ -488,7 +488,7 @@ def heatmapAr_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="地區 / 年齡層信用卡交易金額熱力圖")
+    fig.update_layout(title="地區 / 年齡層 平均交易金額熱力圖")
     return fig
 
 
