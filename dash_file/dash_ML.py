@@ -164,7 +164,7 @@ def ind_chart(selected_ind):
             ),
             secondary_y=True,
         )
-        fig.update_layout(title_text="不同產業別的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text="不同產業別信用卡交易金額及平均交易金額")
         fig.update_xaxes(title_text="產業別")
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
@@ -203,7 +203,7 @@ def ind_chart(selected_ind):
             secondary_y=True,
         )
 
-        fig.update_layout(title_text="不同產業別的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text=f"{selected_ind} 信用卡交易金額及平均交易金額")
         fig.update_xaxes(title_text="產業別")
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
@@ -241,7 +241,7 @@ def age_chart(selected_age):
             secondary_y=True,
         )
 
-        fig.update_layout(title_text="不同年齡層的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text="不同年齡層信用卡交易金額及平均交易金額")
 
         fig.update_xaxes(title_text="年齡層")
 
@@ -283,7 +283,7 @@ def age_chart(selected_age):
             secondary_y=True,
         )
 
-        fig.update_layout(title_text="不同年齡層的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text=f"{selected_age} 信用卡交易金額及平均交易金額")
 
         fig.update_xaxes(title_text="年齡層")
 
@@ -322,7 +322,7 @@ def ar_chart(selected_ar):
             secondary_y=True,
         )
 
-        fig.update_layout(title_text="不同地區的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text="不同地區信用卡交易金額及平均交易金額")
 
         fig.update_xaxes(title_text="地區")
 
@@ -364,7 +364,7 @@ def ar_chart(selected_ar):
             secondary_y=True,
         )
 
-        fig.update_layout(title_text="不同地區的信用卡交易金額及平均交易金額")
+        fig.update_layout(title_text=f"{selected_ar} 信用卡交易金額及平均交易金額")
 
         fig.update_xaxes(title_text="地區")
 
@@ -383,7 +383,7 @@ def lineAge_chart(selected_ar):
             x="年",
             y="信用卡交易金額[新台幣]",
             color="年齡層",
-            title="各年齡層每年信用卡交易金額趨勢",
+            title="不同年齡層每年信用卡交易金額趨勢",
             markers=True,
         )
     else:
@@ -394,7 +394,7 @@ def lineAge_chart(selected_ar):
             x="年",
             y="信用卡交易金額[新台幣]",
             color="年齡層",
-            title=f"{selected_ar}每年信用卡交易金額趨勢",
+            title=f"{selected_ar} 每年信用卡交易金額趨勢",
             markers=True,
         )
     return fig
