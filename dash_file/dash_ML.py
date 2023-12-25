@@ -105,6 +105,22 @@ dash_ML.layout = html.Div(
                     dcc.Graph(id="graph_LinearRegression", style={'width': '50%'})
                 ],style={'display': 'flex', 'flexWrap': 'wrap', 'justify-content': 'center'}
                 ),
+                 html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.P("來源：聯合信用卡處理中心Open API"),
+                            ],
+                            className="col",
+                        )
+                    ],
+                    className="row",
+                    style={
+                        "paddingTop": "2rem",
+                        "fontSize": "0.8rem",
+                        "lineHeight": "0.3rem",
+                    },
+                ),
             ],
             style={"maxWidth":"100%","height":"auto"}
         )
