@@ -1,4 +1,4 @@
-# 信用卡消費樣態_ML
+# 信用卡消費樣態
 ![機器學習](./機器學習.png)
 ###### 連結：[2014-2023信用卡消費樣態](https://dash-ml-knot.onrender.com)
 
@@ -59,3 +59,4 @@
 # 資料說明
 1. 資料來源：聯合信用卡處理中心 OPEN API
 2. 資料範圍：2014年1月 - 2023年9月
+3. 程式集：main_ML.py、dash_ML.py、dataview.ipynb
