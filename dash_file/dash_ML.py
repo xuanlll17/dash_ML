@@ -101,7 +101,7 @@ dash_ML.layout = html.Div(
                 ),
                 html.Div(
                     [
-                        dcc.Graph(id="graph_line", style={"width": "50%"}),
+                        dcc.Graph(id="graph_ind", style={"width": "50%"}),
                         dcc.Graph(id="graph_ar", style={"width": "50%"}),
                         dcc.Graph(id="graph_age", style={"width": "50%"}),
                         dcc.Graph(id="graph_line_age", style={"width": "50%"}),
@@ -139,8 +139,8 @@ dash_ML.layout = html.Div(
 )
 
 
-@dash_ML.callback(Output("graph_line", "figure"), Input("industry", "value"))
-def line_chart(selected_ind):
+@dash_ML.callback(Output("graph_ind", "figure"), Input("industry", "value"))
+def ind_chart(selected_ind):
     global df
     if selected_ind == "ALL":
         df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
@@ -169,7 +169,6 @@ def line_chart(selected_ind):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
-        # Handle the case when a specific industry is selected
         df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
         agg_df = (
             df.groupby("產業別")
@@ -177,7 +176,6 @@ def line_chart(selected_ind):
             .reset_index()
         )
 
-        # Set color to blue for the selected industry
         highlighted_ind = selected_ind
         print(highlighted_ind)
 
@@ -214,7 +212,7 @@ def line_chart(selected_ind):
 
 
 @dash_ML.callback(Output("graph_age", "figure"), Input("age", "value"))
-def line_chart(selected_age):
+def age_chart(selected_age):
     global df
     if selected_age == "ALL":
         df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
@@ -295,7 +293,7 @@ def line_chart(selected_age):
 
 
 @dash_ML.callback(Output("graph_ar", "figure"), Input("area", "value"))
-def line_chart(selected_ar):
+def ar_chart(selected_ar):
     global df
     if selected_ar == "ALL":
         df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
@@ -376,7 +374,7 @@ def line_chart(selected_ar):
 
 
 @dash_ML.callback(Output("graph_line_age", "figure"), Input("age", "value"))
-def line_chart(selected_ar):
+def lineAge_chart(selected_ar):
     global df
     if selected_ar == "ALL":
         year_total = df.groupby(["年", "年齡層"])["信用卡交易金額[新台幣]"].sum().reset_index()
@@ -405,33 +403,27 @@ def line_chart(selected_ar):
 @dash_ML.callback(
     Output("graph_heatmap_age", "figure"), Input("graph_heatmap_age", "id")
 )
-def line_chart(graph_id):
+def heatmapAge_chart(graph_id):
     global df
 
-    # Group by year and age group, and aggregate the data
     grouped_data = (
         df.groupby(["年", "年齡層"])
         .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
         .reset_index()
     )
 
-    # Calculate '平均交易金額'
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
     print(grouped_data)
 
-    # Pivot the data
     pivot_table_year = grouped_data.pivot_table(
         index="年", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
     )
 
-    # Reset the index
     pivot_table_year.reset_index(inplace=True)
 
-    # Display the result
     print(pivot_table_year)
 
-    # Plot the heatmap using Plotly
     fig = px.imshow(
         pivot_table_year.set_index("年"),
         labels=dict(x="年齡層", y="年", color="平均交易金額"),
@@ -445,33 +437,23 @@ def line_chart(graph_id):
 @dash_ML.callback(
     Output("graph_heatmap_ind", "figure"), Input("graph_heatmap_ind", "id")
 )
-def line_chart(graph_id):
+def heatmapInd_chart(graph_id):
     global df
 
-    # Group by year and age group, and aggregate the data
     grouped_data = (
         df.groupby(["產業別", "年齡層"])
         .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
         .reset_index()
     )
 
-    # Calculate '平均交易金額'
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
-    print(grouped_data)
-
-    # Pivot the data
     pivot_table_year = grouped_data.pivot_table(
         index="產業別", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
     )
 
-    # Reset the index
     pivot_table_year.reset_index(inplace=True)
 
-    # Display the result
-    print(pivot_table_year)
-
-    # Plot the heatmap using Plotly
     fig = px.imshow(
         pivot_table_year.set_index("產業別"),
         labels=dict(x="產業別", y="年齡層", color="平均交易金額"),
@@ -482,35 +464,24 @@ def line_chart(graph_id):
     return fig
 
 
-###有問題
 @dash_ML.callback(Output("graph_heatmap_ar", "figure"), Input("graph_heatmap_ar", "id"))
-def line_chart(graph_id):
+def heatmapAr_chart(graph_id):
     global df
 
-    # Group by year and age group, and aggregate the data
     grouped_data = (
         df.groupby(["地區", "年齡層"])
         .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
         .reset_index()
     )
 
-    # Calculate '平均交易金額'
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
-    print(grouped_data)
-
-    # Pivot the data
     pivot_table_year = grouped_data.pivot_table(
         index="地區", columns="年齡層", values="信用卡交易金額[新台幣]", aggfunc="mean"
     )
 
-    # Reset the index
     pivot_table_year.reset_index(inplace=True)
 
-    # Display the result
-    print(pivot_table_year)
-
-    # Plot the heatmap using Plotly
     fig = px.imshow(
         pivot_table_year.set_index("地區"),
         labels=dict(x="年齡層", y="地區", color="平均交易金額"),
@@ -524,15 +495,13 @@ def line_chart(graph_id):
 @dash_ML.callback(
     Output("graph_LinearRegression", "figure"), Input("graph_LinearRegression", "id")
 )
-def line_chart(graph_id):
+def LinearRegression_chart(graph_id):
     global df
     df["年月"] = pd.to_datetime(df["年"].astype(str) + df["月"].astype(str), format="%Y%m")
     df["年月"] = df["年月"].dt.strftime("%Y%m")
 
-    # 按照年月分组，計算每年各個月份的信用卡消費金額
     monthly_total_expenses = df.groupby(["年月"])["信用卡交易金額[新台幣]"].sum().reset_index()
 
-    # 將 '年月' 轉 datetime 取出年份和月份
     monthly_total_expenses["年份"] = pd.to_datetime(
         monthly_total_expenses["年月"], format="%Y%m"
     ).dt.year
@@ -543,23 +512,19 @@ def line_chart(graph_id):
     X = monthly_total_expenses[["年份", "月份"]].astype(float)
     y = monthly_total_expenses["信用卡交易金額[新台幣]"]
 
-    # 多項式特徵轉換
     degree = 2
     poly = PolynomialFeatures(degree=degree)
     X_poly = poly.fit_transform(X)
 
-    # 特徵縮放(MinMaxScaler)
     scaler_X = MinMaxScaler()
     scaler_y = MinMaxScaler()
 
     X_scaled = scaler_X.fit_transform(X_poly)
     y_scaled = scaler_y.fit_transform(y.values.reshape(-1, 1)).flatten()
 
-    # 建立多項式迴歸模型
     model_scaled = LinearRegression()
     model_scaled.fit(X_scaled, y_scaled)
 
-    # 預測2023年10月、11月和12月的信用卡消費金額
     next_months = pd.DataFrame({"年份": [2023] * 3, "月份": [10, 11, 12]})
     next_months_poly = poly.transform(next_months)
     next_months_scaled = scaler_X.transform(next_months_poly)
@@ -572,7 +537,6 @@ def line_chart(graph_id):
     mse_scaled = mean_squared_error(y_scaled, model_scaled.predict(X_scaled))
     print(f"均方差 (scaled): {mse_scaled}")
 
-    # Plotly visualization
     fig = go.Figure()
 
     fig.add_trace(
