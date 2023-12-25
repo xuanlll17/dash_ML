@@ -143,12 +143,12 @@ dash_ML.layout = html.Div(
 def ind_chart(selected_ind):
     global df
     if selected_ind == "ALL":
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
         agg_df = (
             df.groupby("產業別")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         fig.add_trace(
             go.Bar(x=agg_df["產業別"], y=agg_df["信用卡交易金額[新台幣]"], name="信用卡交易金額[新台幣]"),
@@ -169,12 +169,12 @@ def ind_chart(selected_ind):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
         agg_df = (
             df.groupby("產業別")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
 
         highlighted_ind = selected_ind
         print(highlighted_ind)
@@ -215,13 +215,12 @@ def ind_chart(selected_ind):
 def age_chart(selected_age):
     global df
     if selected_age == "ALL":
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
-
         agg_df = (
             df.groupby("年齡層")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -248,13 +247,12 @@ def age_chart(selected_age):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
-
         agg_df = (
             df.groupby("年齡層")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         highlighted_age = selected_age
@@ -296,14 +294,13 @@ def age_chart(selected_age):
 def ar_chart(selected_ar):
     global df
     if selected_ar == "ALL":
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
-
         agg_df = (
             df.groupby("地區")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
 
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         fig.add_trace(
@@ -329,13 +326,12 @@ def ar_chart(selected_ar):
         fig.update_yaxes(title_text="信用卡交易金額[新台幣]", secondary_y=False)
         fig.update_yaxes(title_text="平均交易金額", secondary_y=True)
     else:
-        df["平均交易金額"] = df["信用卡交易金額[新台幣]"] / df["信用卡交易筆數"]
-
         agg_df = (
             df.groupby("地區")
-            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum", "平均交易金額": "mean"})
+            .agg({"信用卡交易金額[新台幣]": "sum", "信用卡交易筆數": "sum"})
             .reset_index()
         )
+        agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         highlighted_ar = selected_ar
