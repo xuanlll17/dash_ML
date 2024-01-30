@@ -91,22 +91,6 @@ dash_ML.layout = html.Div(
                                         {"label": "80(含)歲以上", "value": "80(含)歲以上"},
                                         {"label": "ALL", "value": "ALL"},
                                     ],
-                                    style={"marginRight": "1rem"},
-                                ),
-                            ],
-                        ),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText("預測月份"),
-                                dbc.Select(
-                                    id="month",
-                                    value="ALL",
-                                    options=[
-                                        {"label": "10", "value": "10"},
-                                        {"label": "11", "value": "11"},
-                                        {"label": "12", "value": "12"},
-                                        {"label": "ALL", "value": "ALL"},
-                                    ],
                                 ),
                             ],
                         ),
