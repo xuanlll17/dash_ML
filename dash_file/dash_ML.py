@@ -516,8 +516,10 @@ def heatmapAr_chart(graph_id):
     return fig
 
 
-@dash_ML.callback(Output("graph_LinearRegression", "figure"), Input("month", "value"))
-def LinearRegression_chart(selected_mon):
+@dash_ML.callback(
+    Output("graph_LinearRegression", "figure"), Input("graph_LinearRegression", "id")
+)
+def LinearRegression_chart(graph_id):
     global df
     df["年月"] = pd.to_datetime(df["年"].astype(str) + df["月"].astype(str), format="%Y%m")
     df["年月"] = df["年月"].dt.strftime("%Y%m")
@@ -562,9 +564,7 @@ def LinearRegression_chart(selected_mon):
     fig = go.Figure()
 
     fig.add_trace(
-        go.Scatter(
-            x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額"
-        )
+        go.Scatter(x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額")
     )
     fig.add_trace(
         go.Scatter(
