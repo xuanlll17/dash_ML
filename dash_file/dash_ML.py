@@ -563,81 +563,42 @@ def LinearRegression_chart(selected_mon):
     model_scaled = LinearRegression()
     model_scaled.fit(X_scaled, y_scaled)
 
-    if selected_mon == "ALL":
-        next_months = pd.DataFrame({"年份": [2023] * 3, "月份": [10, 11, 12]})
-        next_months_poly = poly.transform(next_months)
-        next_months_scaled = scaler_X.transform(next_months_poly)
-        next_months["預測信用卡金額_scaled"] = scaler_y.inverse_transform(
-            model_scaled.predict(next_months_scaled).reshape(-1, 1)
-        ).flatten()
+    next_months = pd.DataFrame({"年份": [2023] * 3, "月份": [10, 11, 12]})
+    next_months_poly = poly.transform(next_months)
+    next_months_scaled = scaler_X.transform(next_months_poly)
+    next_months["預測信用卡金額_scaled"] = scaler_y.inverse_transform(
+        model_scaled.predict(next_months_scaled).reshape(-1, 1)
+    ).flatten()
 
-        r_squared_scaled = r2_score(y_scaled, model_scaled.predict(X_scaled))
-        print(f"R-squared value (scaled): {r_squared_scaled}")
-        mse_scaled = mean_squared_error(y_scaled, model_scaled.predict(X_scaled))
-        print(f"均方差 (scaled): {mse_scaled}")
+    r_squared_scaled = r2_score(y_scaled, model_scaled.predict(X_scaled))
+    print(f"R-squared value (scaled): {r_squared_scaled}")
+    mse_scaled = mean_squared_error(y_scaled, model_scaled.predict(X_scaled))
+    print(f"均方差 (scaled): {mse_scaled}")
 
-        fig = go.Figure()
+    fig = go.Figure()
 
-        fig.add_trace(
-            go.Scatter(
-                x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額"
-            )
+    fig.add_trace(
+        go.Scatter(
+            x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額"
         )
-        fig.add_trace(
-            go.Scatter(
-                x=next_months["年份"].astype(str)
-                + next_months["月份"].astype(str).str.zfill(2),
-                y=next_months["預測信用卡金額_scaled"],
-                mode="markers+lines",
-                name="預測信用卡金額",
-                line=dict(dash="dash", color="red"),
-            )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=next_months["年份"].astype(str)
+            + next_months["月份"].astype(str).str.zfill(2),
+            y=next_months["預測信用卡金額_scaled"],
+            mode="markers+lines",
+            name="預測信用卡金額",
+            line=dict(dash="dash", color="red"),
         )
+    )
 
-        fig.update_layout(
-            title="每月信用卡金額及預測",
-            xaxis_title="年月",
-            yaxis_title="信用卡交易金額",
-            xaxis=dict(tickmode="linear", tick0=0, dtick=8),
-            showlegend=True,
-        )
-    else:
-        next_months = pd.DataFrame({"年份": 2023, "月份": [selected_mon]})
-        next_months_poly = poly.transform(next_months)
-        next_months_scaled = scaler_X.transform(next_months_poly)
-        next_months["預測信用卡金額_scaled"] = scaler_y.inverse_transform(
-            model_scaled.predict(next_months_scaled).reshape(-1, 1)
-        ).flatten()
-
-        r_squared_scaled = r2_score(y_scaled, model_scaled.predict(X_scaled))
-        print(f"R-squared value (scaled): {r_squared_scaled}")
-        mse_scaled = mean_squared_error(y_scaled, model_scaled.predict(X_scaled))
-        print(f"均方差 (scaled): {mse_scaled}")
-
-        fig = go.Figure()
-
-        fig.add_trace(
-            go.Scatter(
-                x=monthly_total_expenses["年月"], y=y, mode="markers", name="實際信用卡金額"
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=next_months["年份"].astype(str)
-                + next_months["月份"].astype(str).str.zfill(2),
-                y=next_months["預測信用卡金額_scaled"],
-                mode="markers+lines",
-                name="預測信用卡金額",
-                line=dict(dash="dash", color="red"),
-            )
-        )
-
-        fig.update_layout(
-            title=f"每月信用卡金額及{selected_mon}月預測",
-            xaxis_title="年月",
-            yaxis_title="信用卡交易金額",
-            xaxis=dict(tickmode="linear", tick0=0, dtick=8),
-            showlegend=True,
-        )
+    fig.update_layout(
+        title="每月信用卡金額及預測",
+        xaxis_title="年月",
+        yaxis_title="信用卡交易金額",
+        xaxis=dict(tickmode="linear", tick0=0, dtick=8),
+        showlegend=True,
+    )
 
     return fig
