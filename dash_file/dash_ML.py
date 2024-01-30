@@ -1,7 +1,6 @@
-from dash import Dash, html, dash_table, callback, Input, Output, dcc
+from dash import Dash, html, callback, Input, Output, dcc
 import dash_bootstrap_components as dbc
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -116,7 +115,7 @@ dash_ML.layout = html.Div(
                         "justify-content": "center",
                     },
                 ),
-                 html.Div(
+                html.Div(
                     [
                         html.Div(
                             [
@@ -221,6 +220,11 @@ def age_chart(selected_age):
             .reset_index()
         )
         agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
+
+        # 將未滿20歲的資料放在第一個
+        agg_df = agg_df.sort_values(
+            by="年齡層", key=lambda x: x.replace("未滿20歲", "00").replace("20(含)-25歲", "10")
+        )
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -410,6 +414,12 @@ def heatmapAge_chart(graph_id):
 
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
+    # 修改排序方式，確保未滿20歲顯示在最前面
+    age_order = ["未滿20歲"] + sorted(set(grouped_data["年齡層"]) - {"未滿20歲"})
+
+    grouped_data["年齡層"] = pd.Categorical(
+        grouped_data["年齡層"], categories=age_order, ordered=True
+    )
 
     pivot_table_year = grouped_data.pivot_table(
         index="年", columns="年齡層", values="平均交易金額", aggfunc="mean"
@@ -443,6 +453,12 @@ def heatmapInd_chart(graph_id):
 
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
 
+    # 修改排序方式，確保未滿20歲顯示在最前面
+    age_order = ["未滿20歲"] + sorted(set(grouped_data["年齡層"]) - {"未滿20歲"})
+
+    grouped_data["年齡層"] = pd.Categorical(
+        grouped_data["年齡層"], categories=age_order, ordered=True
+    )
 
     pivot_table_year = grouped_data.pivot_table(
         index="產業別", columns="年齡層", values="平均交易金額", aggfunc="mean"
@@ -471,6 +487,13 @@ def heatmapAr_chart(graph_id):
     )
 
     grouped_data["平均交易金額"] = grouped_data["信用卡交易金額[新台幣]"] / grouped_data["信用卡交易筆數"]
+
+    # 修改排序方式，確保未滿20歲顯示在最前面
+    age_order = ["未滿20歲"] + sorted(set(grouped_data["年齡層"]) - {"未滿20歲"})
+
+    grouped_data["年齡層"] = pd.Categorical(
+        grouped_data["年齡層"], categories=age_order, ordered=True
+    )
 
     pivot_table_year = grouped_data.pivot_table(
         index="地區", columns="年齡層", values="平均交易金額", aggfunc="mean"
