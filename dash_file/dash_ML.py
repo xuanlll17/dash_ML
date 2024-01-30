@@ -274,6 +274,11 @@ def age_chart(selected_age):
         )
         agg_df["平均交易金額"] = agg_df["信用卡交易金額[新台幣]"] / agg_df["信用卡交易筆數"]
 
+        # 將未滿20歲的資料放在第一個
+        agg_df = agg_df.sort_values(
+            by="年齡層", key=lambda x: x.replace("未滿20歲", "00").replace("20(含)-25歲", "10")
+        )
+
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         highlighted_age = selected_age
 
