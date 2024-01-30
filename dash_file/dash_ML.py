@@ -435,7 +435,7 @@ def heatmapAge_chart(graph_id):
         color_continuous_scale="viridis",
         text_auto=True,
     )
-    fig.update_layout(title="年 / 年齡層 平均交易金額[億]熱力圖")
+    fig.update_layout(title="年 / 年齡層 平均交易金額熱力圖")
     return fig
 
 
